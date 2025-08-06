@@ -12,10 +12,11 @@ import (
 )
 
 var (
-	DB          *gorm.DB
-	RedisClient *redis.Client
+	DB          *gorm.DB      // 全局数据库连接
+	RedisClient *redis.Client // 全局 Redis 连接
 )
 
+// MustInitMySQL 初始化 MySQL 连接
 func MustInitMySQL(cfg *viper.Viper) {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		cfg.GetString("mysql.user"),
@@ -39,11 +40,13 @@ func MustInitMySQL(cfg *viper.Viper) {
 	// query.SetDefault(db)
 }
 
+// MustInitRedis 初始化 Redis 连接
 func MustInitRedis(conf *viper.Viper) {
+	addr := fmt.Sprintf("%s:%d", conf.GetString("redis.host"), conf.GetInt("redis.port"))
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     conf.GetString("data.redis.addr"),
-		Password: conf.GetString("data.redis.password"),
-		DB:       conf.GetInt("data.redis.db"),
+		Addr:     addr,
+		Password: conf.GetString("redis.password"),
+		DB:       conf.GetInt("redis.db"),
 	})
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)

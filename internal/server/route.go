@@ -6,11 +6,13 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/q1mi/gin-base-layout/internal/handler/calc"
+	"github.com/q1mi/gin-base-layout/pkg/logging"
 	"github.com/spf13/viper"
 )
 
 func SetupRoutes(cfg *viper.Viper) *gin.Engine {
-	r := gin.Default()
+	r := gin.New()
+	r.Use(logging.GinLogger(), logging.GinRecovery(true)) // 日志中间件，记录请求日志
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "pong",
