@@ -27,7 +27,15 @@ func Auth() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		claims, err := jwt.ParseAccessToken(authorizationValue)
+		// 判断token是否合法
+		if len(authorizationValue) <= 7 || !strings.HasPrefix(authorizationValue, tokenPrefix) {
+			api.ResponseError(c, api.CodeInvalidToken)
+			c.Abort()
+			return
+		}
+		tokenString := strings.TrimPrefix(authorizationValue, tokenPrefix)
+		// 解析token，获取claims
+		claims, err := jwt.ParseAccessToken(tokenString)
 		if err != nil {
 			zap.L().Sugar().Debugf("parse access token error: %v", err)
 			api.ResponseError(c, api.CodeInvalidToken)

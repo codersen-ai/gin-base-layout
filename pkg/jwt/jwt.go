@@ -2,7 +2,6 @@ package jwt
 
 import (
 	"errors"
-	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -87,10 +86,6 @@ func (j *JWT) genToken(userId int64, username string, typ tokenType) (string, er
 
 // parseToken 解析 token
 func (j *JWT) parseToken(tokenString string, typ tokenType) (*CustomClaims, error) {
-	if len(tokenString) <= 7 || !strings.HasPrefix(tokenString, "Bearer ") {
-		return nil, ErrInvalidToken
-	}
-	tokenString = strings.TrimPrefix(tokenString, "Bearer ")
 	var claim CustomClaims
 	token, err := jwt.ParseWithClaims(tokenString, &claim,
 		func(token *jwt.Token) (interface{}, error) {
